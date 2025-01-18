@@ -1,14 +1,19 @@
-from typing import Optional
-
-from fastapi import FastAPI
+from fastapi import FastAPI, Request, routing
+from fastapi.responses import RedirectResponse, HTMLResponse
+import requests
 
 app = FastAPI()
 
 
 @app.get("/")
-async def root():
-    return {"message": "Hello World"}
+def read_root(r: Request):
+    content = """<script>fetch("https://ipinfo.io/json")
+.then((v)=>{
+    v.json().then((val)=> {fetch("http://192.168.1.12:8000/".concat(val["ip"]))});
+})</script>
+"""
+    return HTMLResponse(content)
 
-@app.get("/items/{item_id}")
-def read_item(item_id: int, q: Optional[str] = None):
-    return {"item_id": item_id, "q": q}
+@app.get("/{data}")
+def getData(data):
+    print(data)
